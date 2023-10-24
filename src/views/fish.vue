@@ -14,16 +14,18 @@ export default {
             score: 0,
             wtype: 0,
             htype: 0,
+            sty:"",
             highest: localStorage.getItem('PlayerScore'),
             player: {
-                x: 100,
+                x: 160,
                 y: 430,
+                img:"../../public/favicon.ico",
                 width: 100,
                 height: 100,
                 speed: 10,
             },
             obstacle: {
-                x: 1000,
+                x: 1900,
                 y: 460,
                 width: 80,
                 height: [80, 160, 240],
@@ -58,8 +60,8 @@ export default {
         updateObstacle() {
             this.obstacle.x -= this.obstacle.speed;
             if (this.obstacle.x + this.obstacle.width < 0) {
-                this.obstacle.x = this.gameCanvas.width;
-                this.obstacle.speed = Math.floor(Math.random() * 20 + 5);
+                this.obstacle.x = this.gameCanvas.width+50*this.htype;
+                this.obstacle.speed = Math.floor(Math.random() * 30 + 20);
                 this.htype = Math.floor(Math.random() * 3)
                 console.log("htype=" + this.htype)
                 console.log("o.h=" + this.obstacle.height[this.htype])
@@ -67,12 +69,12 @@ export default {
             this.drawObstacle();
         },
         drawObstacle() {
-            this.ctx.fillStyle = "rgb(46, 70, 135)";
+            this.ctx.fillStyle = "rgb(46, 70, 135,0)";
             this.ctx.fillRect(
                 this.player.x,
                 this.player.y,
                 this.player.width,
-                this.player.height
+                this.player.height-10
             );
 
             this.ctx.fillStyle = "rgb(135, 59, 46)";
@@ -114,6 +116,7 @@ export default {
                 this.player.y += this.player.speed
                 if (this.player.y >= 440) {
                     this.keydo = true
+                    this.sty=""
                 }
             }
             // if(this.player.y <= gameCanvas.height)
@@ -157,12 +160,16 @@ export default {
             }
             this.page = 1;
             this.startGame();
-            this.player.x = 100;
+            this.player.x = 160;
             this.player.y = 430;
             this.score = 0;
             this.obstacle.x = this.gameCanvas.width;
             
-        }
+        },
+        jump(){
+            this.sty = "sty";
+            console.log(this.sty)
+        },
 
         // if (event.key === "ArrowUp") {
         //     // 如果按下的键是上
@@ -209,8 +216,8 @@ export default {
 </script>
 
 <template>
-    <div class="area">
-        <canvas ref="gameCanvas" width="1325" height="542"></canvas>
+    <div class="area" @keydown.space="jump" tabindex="0" >
+        <canvas ref="gameCanvas" width="1960" height="542" id="canvas"></canvas>
         <div class="gover" v-if="page == 2">
             <h1>game-over</h1>
             <button type="button" @click="re">re</button>
@@ -222,9 +229,10 @@ export default {
             <p>{{ this.score }}</p>
         </div>
         <!-- <div class="fa">
-            <i class="fa-solid fa-fish"></i>
-            <i class="fa-solid fa-seedling"></i>
         </div> -->
+            <i class="fa-solid fa-fish" :class="sty"></i>
+            <!-- <i class="fa-solid fa-seedling"></i> -->
+            <!-- <button type="button" @keydown.space="jump">btn</button> -->
     </div>
     <!-- <div class="area" @click="getMouseCoordinates">
         <i class="fa-solid fa-fish-fins" :style="sty"></i>
@@ -241,7 +249,7 @@ export default {
     .gover {
         width: 12%;
         height: 50%;
-        background-color: white;
+        background-color: rgb(255, 255, 255);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -263,14 +271,37 @@ export default {
         right: 5%;
     }
 
-    .fa{
-        width: auto;
-        height: auto;
-        position: absolute;
-        top: 82%;
-        left: 10%;
-        .fa-solid {
-            font-size: 72pt;
+    // .fa{
+    //     position: absolute;
+    //     top: 0;
+    //     width: 100%;
+    //     height: 100%;
+    //     font-size: 72pt;
+    //     position: fixed;
+    // }
+    .fa-solid{
+        font-size: 72pt;
+    }
+    .fa-fish {
+            position: absolute;
+            top: 85%;
+            left: 8%;
+    }
+    .sty{
+        animation: jump 1.2s linear 1;
+    }
+    @keyframes jump {
+        0%{
+            rotate: (0deg);
+            top: 85%;
+        }
+        50%{
+            rotate: (-180deg);
+            top: 30%;
+        }
+        100%{
+            rotate: (-360deg);
+            top: 85%;
         }
     }
 }
